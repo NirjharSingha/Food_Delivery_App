@@ -18,10 +18,18 @@ public class Main {
                 Register register = new Register();
                 register.userReg();
             } else if (choice == 1) {
-                Login login = new Login();
-                login.handleLogin();
-                Register register = new Register();
-                register.restaurantReg();
+                System.out.println("Press 1 to log in as a user");
+                System.out.println("Press 2 to log in as an employee");
+                int log = sc.nextInt();
+                if(log != 1 && log != 2) {
+                    System.out.println("Invalid input");
+                } else if(log == 1) {
+                    Login login = new Login();
+                    login.userLogin();
+                } else {
+                    Login login = new Login();
+                    login.employeeLogin();
+                }
             } else if(choice == 2) {
                 break;
             } else {

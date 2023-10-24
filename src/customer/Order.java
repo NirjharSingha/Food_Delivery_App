@@ -163,7 +163,7 @@ public class Order {
             Map<String, OrderItem> menuItems = entry.getValue(); // i-th value (another map)
             String orderId = Login.getLoggedINUser() + restaurantId + LocalDateTime.now();
 
-            String query1 = "INSERT INTO Orders (order_id, user_email, restaurant_id, order_date, delivery_address, total_price, delivery_time, delivery_fee) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String query1 = "INSERT INTO Orders (order_id, user_email, restaurant_id, order_date, delivery_address, total_price, delivery_time, delivery_fee, delivery_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement statement1 = connection.prepareStatement(query1);
             statement1.setString(1, orderId);
             statement1.setString(2, Login.getLoggedINUser());
@@ -173,6 +173,22 @@ public class Order {
             statement1.setBigDecimal(6, orderTotalPriceMap.get(restaurantId));
             statement1.setInt(7, 30);
             statement1.setBigDecimal(8, orderTotalPriceMap.get(restaurantId).multiply(new BigDecimal("0.1")));
+
+            String tempQuery = "SELECT employee_id\n" +
+                    "FROM Employee\n" +
+                    "WHERE job = 'Delivery_Agent' AND availability_status = TRUE\n" +
+                    "LIMIT 1;\n";
+            PreparedStatement tempSt = connection.prepareStatement(tempQuery);
+            ResultSet r = tempSt.executeQuery();
+            if(r.next()) {
+                statement1.setString(9, r.getString("employee_id"));
+                String updateQuery = "UPDATE Employee SET availability_status = FALSE WHERE employee_id = ?";
+                PreparedStatement st = connection.prepareStatement(updateQuery);
+                st.setString(1, r.getString("employee_id"));
+                st.executeUpdate();
+            } else {
+                statement1.setString(9, null);
+            }
 
             statement1.executeUpdate();
 

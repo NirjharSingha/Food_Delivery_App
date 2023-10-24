@@ -1,5 +1,6 @@
 package utils;
 
+import entity.Employee;
 import entity.Restaurant;
 import entity.User;
 
@@ -70,6 +71,47 @@ public class Register {
             preparedStatement.setString(4, restaurant.getPhone_number());
             preparedStatement.setString(5, restaurant.getOwner());
             preparedStatement.setTimestamp(6, restaurant.getRegistration_date());
+
+            preparedStatement.executeUpdate();
+
+            String updateQuery = "UPDATE Users set usertype = ? WHERE email = ?";
+            PreparedStatement statement = connection.prepareStatement(updateQuery);
+            statement.setString(1,"Res_owner");
+            statement.setString(2, Login.getLoggedINUser());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void employeeReg() {
+        Employee employee = new Employee();
+
+        ConnectDatabase db = new ConnectDatabase();
+        Connection connection = db.getCon();
+        String query = "SELECT employee_id FROM Employee WHERE employee_id = ?";
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, employee.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                System.out.println("Duplicate id");
+                return;
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        String insertQuery = "INSERT INTO Employee (employee_id, name, login_pass, phone_number, job, registration_date, availability_status) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+            preparedStatement.setString(1, employee.getId());
+            preparedStatement.setString(2, employee.getName());
+            preparedStatement.setString(3, employee.getPassword());
+            preparedStatement.setString(4, employee.getPhone_number());
+            preparedStatement.setString(5, employee.getJob());
+            preparedStatement.setTimestamp(6, employee.getRegistration_date());
+            preparedStatement.setBoolean(7, true);
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
