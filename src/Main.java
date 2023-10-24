@@ -1,4 +1,3 @@
-import customer.Order;
 import utils.Login;
 import utils.Register;
 
@@ -9,8 +8,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         System.out.println("Welcome to Food Delivery App");
         Scanner sc = new Scanner(System.in);
-        Order order = new Order();
-        order.placeOrder();
+
         while(true) {
             System.out.println("Press 0 if you want to register");
             System.out.println("Press 1 if you want to log in");
@@ -22,6 +20,8 @@ public class Main {
             } else if (choice == 1) {
                 Login login = new Login();
                 login.handleLogin();
+                Register register = new Register();
+                register.restaurantReg();
             } else if(choice == 2) {
                 break;
             } else {

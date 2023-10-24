@@ -8,6 +8,17 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Login {
+
+    private static String loggedINUser;
+
+    public static void setLoggedINUser(String loggedINUser) {
+        Login.loggedINUser = loggedINUser;
+    }
+
+    public static String getLoggedINUser() {
+        return loggedINUser;
+    }
+
     public void handleLogin() throws SQLException {
         ConnectDatabase db = new ConnectDatabase();
         Connection con = db.getCon();
@@ -26,6 +37,7 @@ public class Login {
             String password = sc.next();
             if(Objects.equals(password, r.getString("password"))) {
                 System.out.println("You've logged in successfully");
+                Login.setLoggedINUser(email);
             } else {
                 System.out.println("invalid password");
             }
