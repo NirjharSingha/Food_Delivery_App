@@ -1,4 +1,4 @@
-package customer;
+package order;
 
 import utils.ConnectDatabase;
 import utils.Login;
@@ -6,6 +6,7 @@ import utils.Login;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -157,7 +158,8 @@ public class Order {
 
             orderTotalPriceMap.put(restaurantId, totalOrderPrice);
         }
-
+        System.out.println("Your order is placed. Details are given below:");
+        System.out.println("Order_id Restaurant Price(without delivery charge) Delivery_charge Total_price Delivery_time");
         for (Map.Entry<String, Map<String, OrderItem>> entry : restaurantMenuMap.entrySet()) {
             String restaurantId = entry.getKey(); // i-th key
             Map<String, OrderItem> menuItems = entry.getValue(); // i-th value (another map)
@@ -206,40 +208,90 @@ public class Order {
                 statement2.executeUpdate();
             }
 
-            String query3 = "INSERT INTO OrderStatus (order_id, payment_status, cancellation_status) VALUES (?, ?, ?)";
+            String query3 = "INSERT INTO OrderStatus (order_id, payment_status) VALUES (?, ?)";
             PreparedStatement statement3 = connection.prepareStatement(query3);
             statement3.setString(1, orderId);
-            statement3.setString(2, "Pending");
-            statement3.setBoolean(3, false);
+            statement3.setString(2, "Paid");
 
             statement3.executeUpdate();
+            System.out.println(orderId + " " + restaurantId + " " + orderTotalPriceMap.get(restaurantId) + " 30 min");
         }
 
     }
-}
 
-class OrderItem {
-    private int quantity;
-    private BigDecimal price;
+    public void cancelOrder() throws SQLException {
+        ConnectDatabase db = new ConnectDatabase();
+        Connection connection = db.getCon();
+        String query = "SELECT DISTINCT O.order_id\n" +
+                "FROM Orders AS O\n" +
+                "INNER JOIN OrderStatus AS OS ON O.order_id = OS.order_id\n" +
+                "WHERE O.user_email = ? \n" +
+                "AND OS.delivered_to_customer IS NULL";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, Login.getLoggedINUser());
+        ResultSet r = statement.executeQuery();
+        System.out.println("These are the pending orders");
+        ArrayList<String> ids = new ArrayList<>();
+        while(r.next()) {
+            System.out.println(r.getString("O.order_id"));
+            ids.add(r.getString("O.order_id"));
+        }
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the order_id you want to cancel");
+        String id = sc.next();
+        if (ids.contains(id)) {
+            String timeQuery = "SELECT order_date, delivery_time FROM Orders WHERE order_id = ?";
+            PreparedStatement timeStatement = connection.prepareStatement(timeQuery);
+            timeStatement.setString(1, id);
+            ResultSet timeResult = timeStatement.executeQuery();
+            if (timeResult.next()) {
+                Timestamp orderDate = timeResult.getTimestamp("order_date");
+                int deliveryTime = timeResult.getInt("delivery_time");
 
-    public int getQuantity() {
-        return quantity;
-    }
+                // Calculate the current time
+                Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+                // Calculate the time difference in minutes
+                long timeDifference = (currentTime.getTime() - orderDate.getTime()) / (60 * 1000);
+                String choice;
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+                if (timeDifference > deliveryTime) {
+                    System.out.println("The delivery time has exceeded. You will get refund if you cancel the order now.");
+                    System.out.println("Press 1 if you want to confirm the cancellation");
+                    System.out.println("Press any other key to skip");
+                    choice = sc.nextLine().trim();
+                    if(choice.equals("1")) {
+                        String q = "UPDATE OrderStatus SET payment_status = ?, cancellation_status = ? WHERE order_id = ?";
+                        PreparedStatement st = connection.prepareStatement(q);
+                        st.setString(1, "Refunded");
+                        st.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+                        st.setString(3, id);
+                        st.executeUpdate();
+                    }
+                } else {
+                    System.out.println("The delivery time has not exceeded. If you cancel the order now you won't get any refund");
+                    System.out.println("Press 1 if you want to confirm the cancellation");
+                    System.out.println("Press any other key to skip");
+                    choice = sc.nextLine().trim();
+                    if(choice.equals("1")) {
+                        String q = "UPDATE OrderStatus SET cancellation_status = ? WHERE order_id = ?";
+                        PreparedStatement st = connection.prepareStatement(q);
+                        st.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                        st.setString(2, id);
+                        st.executeUpdate();
+                    }
+                }
+                if(choice.equals("1")) {
+                    String q = "UPDATE Employee SET availability_status = true WHERE employee_id = (SELECT delivery_agent FROM Orders WHERE order_id = ?)";
+                    PreparedStatement st = connection.prepareStatement(q);
+                    st.setString(1, id);
+                    st.executeUpdate();
+                    System.out.println("Order cancelled");
+                }
+            }
+        } else {
+            System.out.println("Invalid id");
+        }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public OrderItem(int quantity, BigDecimal price) {
-        this.quantity = quantity;
-        this.price = price;
     }
 }
