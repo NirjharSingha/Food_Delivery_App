@@ -8,34 +8,29 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         System.out.println("Welcome to Food Delivery App");
         Scanner sc = new Scanner(System.in);
-
-        while(true) {
-            System.out.println("Press 0 if you want to register");
-            System.out.println("Press 1 if you want to log in");
-            System.out.println("Press 2 if you want to exit");
-            int choice = sc.nextInt();
-            if (choice == 0) {
-                Register register = new Register();
-                register.userReg();
-            } else if (choice == 1) {
-                System.out.println("Press 1 to log in as a user");
-                System.out.println("Press 2 to log in as an employee");
-                int log = sc.nextInt();
-                if(log != 1 && log != 2) {
-                    System.out.println("Invalid input");
-                } else if(log == 1) {
-                    Login login = new Login();
-                    login.userLogin();
-                } else {
-                    Login login = new Login();
-                    login.employeeLogin();
-                }
-            } else if(choice == 2) {
-                break;
+        System.out.println("Press 0 if you want to register");
+        System.out.println("Press 1 if you want to log in");
+        int choice = sc.nextInt();
+        if (choice == 0) {
+            Register register = new Register();
+            register.userReg();
+        } else if (choice == 1) {
+            System.out.println("Press 1 to log in as a user");
+            System.out.println("Press 2 to log in as an employee");
+            int log = sc.nextInt();
+            if(log != 1 && log != 2) {
+                System.out.println("Invalid input");
+            } else if(log == 1) {
+                Login login = new Login();
+                login.userLogin();
             } else {
-                System.out.println("invalid input");
+                Login login = new Login();
+                login.employeeLogin();
             }
+        } else {
+            System.out.println("invalid input");
         }
+
         sc.close();
     }
 }

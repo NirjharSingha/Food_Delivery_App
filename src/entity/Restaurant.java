@@ -37,17 +37,12 @@ public class Restaurant {
         return registration_date;
     }
 
-    public Restaurant() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter your restaurant registration number");
-        res_id = sc.next();
-        System.out.println("Enter your restaurant name");
-        name = sc.next();
-        System.out.println("Enter your phone number");
-        phone_number = sc.next();
-        System.out.println("Enter restaurant address");
-        address = sc.next();
-        owner = Login.getLoggedINUser();
-        registration_date = new Timestamp(System.currentTimeMillis());
+    public Restaurant(String res_id, String name, String phone_number, String owner, String address, Timestamp registration_date) {
+        this.res_id = res_id;
+        this.name = name;
+        this.phone_number = phone_number;
+        this.owner = owner;
+        this.address = address;
+        this.registration_date = registration_date;
     }
 }

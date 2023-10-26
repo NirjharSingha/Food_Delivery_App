@@ -13,13 +13,11 @@ import java.util.Scanner;
 
 public class Restaurant_Activity {
 
-    public void updateRes() throws SQLException {
+    public void updateRes(String res_id) throws SQLException {
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter the registration number of the restaurant you want to update:");
-        String res_id = sc.next();
-        String query = "SELECT res_owner name, address, phone_number FROM Restaurants WHERE restaurant_id = ?";
+        String query = "SELECT res_owner, name, address, phone_number FROM Restaurants WHERE restaurant_id = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, res_id);
         ResultSet r = statement.executeQuery();
@@ -35,16 +33,20 @@ public class Restaurant_Activity {
                 System.out.print("Enter updated phone number:");
                 String phone = sc.nextLine().trim();
 
-                String updateQuery = "UPDATE Restaurant set name = ?, address = ?, phone_number = ? WHERE restaurant_id = ?";
+                String updateQuery = "UPDATE Restaurants set name = ?, address = ?, phone_number = ? WHERE restaurant_id = ?";
                 PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
                 preparedStatement.setString(1, name.equals("") ? r.getString("name") : name);
                 preparedStatement.setString(2, address.equals("") ? r.getString("address") : address);
                 preparedStatement.setString(3, phone.equals("") ? r.getString("phone_number") : phone);
                 preparedStatement.setString(4, res_id);
                 preparedStatement.executeUpdate();
+
+                System.out.println("Restaurant updated successfully. These are your restaurants:");
+                listRes();
             }
         }
     }
+
     public void listRes() throws SQLException {
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
@@ -65,23 +67,23 @@ public class Restaurant_Activity {
         System.out.println("Enter registration number of the restaurant(Press enter if you want to see menu of  all your restaurant/s)");
         String res_id = sc.nextLine().trim();
         if(res_id.equals("")) {
-            String query = "SELECT menu_id, m.name, r.name, description, category, price, availability_status FROM Menu as m INNER JOIN Restaurants as r ON m.restaurant_id = r.restaurant_id WHERE res_owner = ?";
+            String query = "SELECT menu_id, m.name, r.name, category, price, availability_status FROM Menu as m INNER JOIN Restaurants as r ON m.restaurant_id = r.restaurant_id WHERE res_owner = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, Login.getLoggedINUser());
             ResultSet r = statement.executeQuery();
-            System.out.println("menu_id menu_name restaurant_name description category price availability_status");
+            System.out.println("menu_id menu_name restaurant_name category price availability_status");
             while (r.next()) {
-                System.out.println(r.getString("menu_id") + " " + r.getString("m.name") + " " + r.getString("r.name") + " " + r.getString("description") + " " + r.getString("category") + " " + r.getBigDecimal("price") + " " + r.getBoolean("availability_status"));
+                System.out.println(r.getString("menu_id") + " " + r.getString("m.name") + " " + r.getString("r.name") + " " + r.getString("category") + " " + r.getBigDecimal("price") + " " + r.getBoolean("availability_status"));
             }
         } else {
-            String query = "SELECT menu_id, m.name, description, category, price, availability_status FROM Menu as m INNER JOIN Restaurants as r ON m.restaurant_id = r.restaurant_id WHERE res_owner = ? AND restaurant_id = ?";
+            String query = "SELECT menu_id, m.name, m.restaurant_id, category, price, availability_status FROM Menu as m INNER JOIN Restaurants as r ON m.restaurant_id = r.restaurant_id WHERE res_owner = ? AND m.restaurant_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, Login.getLoggedINUser());
             statement.setString(2, res_id);
             ResultSet r = statement.executeQuery();
-            System.out.println("menu_id name description category price availability_status");
+            System.out.println("menu_id name category price availability_status");
             while (r.next()) {
-                System.out.println(r.getString("restaurant_id") + " " + r.getString("m.name") + " " + r.getString("description") + " " + r.getString("category") + " " + r.getBigDecimal("price") + " " + r.getBoolean("availability_status"));
+                System.out.println(r.getString("menu_id") + " " + r.getString("m.name") + " " + r.getString("category") + " " + r.getBigDecimal("price") + " " + r.getBoolean("availability_status"));
             }
         }
     }
@@ -91,9 +93,9 @@ public class Restaurant_Activity {
         Connection connection = db.getCon();
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter menu id to update:");
-        String menu_id = sc.next();
+        String menu_id = sc.nextLine().trim();
 
-        String query = "SELECT name, restaurant_id, description, category, price, availability_status FROM Menu WHERE menu_id = ?";
+        String query = "SELECT name, restaurant_id, category, price, availability_status FROM Menu WHERE menu_id = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, menu_id);
 
@@ -108,8 +110,6 @@ public class Restaurant_Activity {
                     System.out.println("Enter the updated value of each field. If you don't want to update a field then just press ENTER");
                     System.out.print("Enter updated name:");
                     String name = sc.nextLine().trim();
-                    System.out.print("Enter updated description:");
-                    String desc = sc.nextLine().trim();
                     System.out.print("Enter updated category:");
                     String category = sc.nextLine().trim();
                     System.out.print("Enter updated price:");
@@ -121,34 +121,41 @@ public class Restaurant_Activity {
                         return;
                     }
 
-                    String updateQuery = "UPDATE Menu set name = ?, description = ?, category = ?, price = ?, availability_status = ? WHERE menu_id = ?";
+                    String updateQuery = "UPDATE Menu set name = ?, category = ?, price = ?, availability_status = ? WHERE menu_id = ?";
                     PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
                     preparedStatement.setString(1, name.equals("") ? r.getString("name") : name);
-                    preparedStatement.setString(2, desc.equals("") ? r.getString("description") : desc);
-                    preparedStatement.setString(3, category.equals("") ? r.getString("category") : category);
-                    preparedStatement.setBigDecimal(4, price.equals("") ? r.getBigDecimal("price") : new BigDecimal(price));
-                    preparedStatement.setBoolean(5, status.equals("") ? r.getBoolean("availability_status") : Boolean.parseBoolean(status));
-                    preparedStatement.setString(6, menu_id);
+                    preparedStatement.setString(2, category.equals("") ? r.getString("category") : category);
+                    preparedStatement.setBigDecimal(3, price.equals("") ? r.getBigDecimal("price") : new BigDecimal(price));
+                    preparedStatement.setBoolean(4, status.equals("") ? r.getBoolean("availability_status") : status.equals("1"));
+                    preparedStatement.setString(5, menu_id);
                     preparedStatement.executeUpdate();
+
+                    System.out.println("Menu updated successfully");
                 } else {
                     System.out.println("This menu item doesn't belong to your restaurant. You cannot update it.");
                 }
+            } else {
+                System.out.println("Invalid id");
             }
         }
     }
 
-    public void insertMenu() throws SQLException {
+    public void insertMenu(String res_id) throws SQLException {
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter restaurant registration number(it cannot be empty):");
-        String res_id = sc.next();
         System.out.print("Enter menu name(it cannot be empty):");
-        String name = sc.next();
-        System.out.print("Enter description(press ENTER if you want to skip):");
-        String desc = sc.nextLine().trim();
-        System.out.print("Enter category(Veg, Non-veg or Vegan):");
+        String name = sc.nextLine().trim();
+        if (name.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.print("Enter category(Veg, Non-veg, Vegan Or Drink):");
         String category = sc.next();
+        if(!Objects.equals(category, "Veg") && !Objects.equals(category, "Non-veg") && !Objects.equals(category, "Vegan") && !Objects.equals(category, "Drink")) {
+            System.out.println("Invalid category");
+            return;
+        }
         System.out.print("Enter price(it cannot be empty):");
         BigDecimal price = sc.nextBigDecimal();
         System.out.print("Enter availability status(0 or 1):");
@@ -158,17 +165,29 @@ public class Restaurant_Activity {
             return;
         }
 
-        String menu_id = res_id + name;
+        String menu_id = res_id + "_" + name.replace(" ", "_");;
+        String verifyQuery = "SELECT name FROM Menu WHERE restaurant_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(verifyQuery);
+        preparedStatement.setString(1, res_id);
 
-        String query = "INSERT INTO Menu (menu_id, restaurant_id, name, description, category, price, availability_status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            if(Objects.equals(resultSet.getString("name"), name)) {
+                System.out.println("Duplicate menu name. Cannot insert.");
+                return;
+            }
+        }
+
+        String query = "INSERT INTO Menu (menu_id, restaurant_id, name, category, price, availability_status) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, menu_id);
         statement.setString(2, res_id);
         statement.setString(3, name);
-        statement.setString(4, !desc.equals("") ? desc: null);
-        statement.setString(5, category);
-        statement.setBigDecimal(6, price);
-        statement.setBoolean(7, Boolean.parseBoolean(status));
+        statement.setString(4, category);
+        statement.setBigDecimal(5, price);
+        statement.setBoolean(6, status.equals("1"));
         statement.executeUpdate();
+
+        System.out.println("Menu inserted");
     }
 }

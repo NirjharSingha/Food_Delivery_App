@@ -48,6 +48,10 @@ public class Login {
                 System.out.println("You've logged in successfully");
                 Login.setLoggedINUser(email);
                 Login.setUserType(r.getString("usertype"));
+
+                Home home = new Home();
+                home.homePage();
+
             } else {
                 System.out.println("invalid password");
             }
@@ -64,7 +68,7 @@ public class Login {
         Scanner sc = new Scanner(System.in);
         String id = sc.next();
 
-        String query = "SELECT password, job FROM Employee WHERE employee_id = ?";
+        String query = "SELECT login_pass, job FROM Employee WHERE employee_id = ?";
         PreparedStatement statement = con.prepareStatement(query);
         statement.setString(1, id);
 
@@ -72,10 +76,14 @@ public class Login {
         if (r.next()) {
             System.out.println("Enter your password");
             String password = sc.next();
-            if(Objects.equals(password, r.getString("password"))) {
+            if(Objects.equals(password, r.getString("login_pass"))) {
                 System.out.println("You've logged in successfully");
                 Login.setLoggedINUser(id);
                 Login.setUserType(r.getString("job"));
+
+                Home home = new Home();
+                home.homePage();
+
             } else {
                 System.out.println("invalid password");
             }

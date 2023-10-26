@@ -31,6 +31,8 @@ public class UpdateProfile {
             preparedStatement.setString(3, phone.equals("") ? r.getString("phone_number") : phone);
             preparedStatement.setString(4, Login.getLoggedINUser());
             preparedStatement.executeUpdate();
+
+            System.out.println("Profile updated successfully");
         }
     }
     public void updateEmployee() throws SQLException {
@@ -57,6 +59,8 @@ public class UpdateProfile {
             preparedStatement.setString(3, phone.equals("") ? r.getString("phone_number") : phone);
             preparedStatement.setString(4, Login.getLoggedINUser());
             preparedStatement.executeUpdate();
+
+            System.out.println("Profile updated successfully");
         }
     }
 }

@@ -35,7 +35,6 @@ public class Order {
                 "    price,\n" +
                 "    availability_status,\n" +
                 "    res_name,\n" +
-                "    delivery_time,\n" +
                 "    rating\n" +
                 ") AS (\n" +
                 "    SELECT m.menu_id,\n" +
@@ -44,7 +43,6 @@ public class Order {
                 "        m.price,\n" +
                 "        m.availability_status,\n" +
                 "        r.name AS res_name,\n" +
-                "        r.delivery_time,\n" +
                 "        COALESCE((SELECT AVG(rating) FROM Reviews WHERE rating IS NOT NULL AND Reviews.menu_id = m.menu_id), 0) AS rating\n" +
                 "    FROM Menu AS m\n" +
                 "    INNER JOIN Restaurants AS r ON m.restaurant_id = r.restaurant_id\n" +
@@ -86,9 +84,11 @@ public class Order {
         preparedStatement.setString(10, rating);
 
         ResultSet r = preparedStatement.executeQuery();
+        System.out.println("menu_id menu_name category price restaurant rating");
         while(r.next()) {
-            System.out.println(r.getString("menu_name") + " " + r.getBigDecimal("rating"));
+            System.out.println(r.getString("menu_id") + " " + r.getString("menu_name")+ " " + r.getString("category")+ " " + r.getBigDecimal("price")+ " " + r.getString("res_name") +  " " + r.getBigDecimal("rating"));
         }
+        System.out.println("Now you can place the order");
     }
 
     public void placeOrder() throws SQLException {
@@ -114,6 +114,9 @@ public class Order {
             if (r.next()) {
                 restaurantId = r.getString("restaurant_id");
                 price = r.getBigDecimal("price");
+            } else {
+                System.out.println("Invalid menu id");
+                return;
             }
 
             if (restaurantMenuMap.containsKey(restaurantId)) {
@@ -134,16 +137,17 @@ public class Order {
             }
 
             System.out.println("Press 1 to add more items.");
-            System.out.println("Press any other key to confirm your order.");
+            System.out.println("Press 2 to confirm your order.");
             System.out.println("Items selected from different restaurants will be considered as different orders, and you need to pay separate delivery charges for each of them.");
-            int choice = sc.nextInt();
-            if (choice != 1) {
+            String choice = sc.next();
+            if (!choice.equals("1")) {
+                System.out.println("order confirmed");
                 break;
             }
         }
-
+        sc.nextLine();
         System.out.println("Enter delivery address");
-        String del_address = sc.next();
+        String del_address = sc.nextLine();
 
 
         Map<String, BigDecimal> orderTotalPriceMap = new HashMap<>();
@@ -159,7 +163,7 @@ public class Order {
             orderTotalPriceMap.put(restaurantId, totalOrderPrice);
         }
         System.out.println("Your order is placed. Details are given below:");
-        System.out.println("Order_id Restaurant Price(without delivery charge) Delivery_charge Total_price Delivery_time");
+        System.out.println("Order_id Restaurant Price(without delivery charge) Delivery_charge Delivery_time");
         for (Map.Entry<String, Map<String, OrderItem>> entry : restaurantMenuMap.entrySet()) {
             String restaurantId = entry.getKey(); // i-th key
             Map<String, OrderItem> menuItems = entry.getValue(); // i-th value (another map)
@@ -214,7 +218,7 @@ public class Order {
             statement3.setString(2, "Paid");
 
             statement3.executeUpdate();
-            System.out.println(orderId + " " + restaurantId + " " + orderTotalPriceMap.get(restaurantId) + " 30 min");
+            System.out.println(orderId + " " + restaurantId + " " + orderTotalPriceMap.get(restaurantId) + " " + orderTotalPriceMap.get(restaurantId).multiply(new BigDecimal("0.10")) + " 30 min");
         }
 
     }

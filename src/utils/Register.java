@@ -4,14 +4,35 @@ import entity.Employee;
 import entity.Restaurant;
 import entity.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Scanner;
 
 public class Register {
     public void userReg() {
-        User user = new User();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter your email");
+        String email = sc.nextLine().trim();
+        if (email.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your name");
+        String username = sc.nextLine().trim();
+        if (username.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your password");
+        String password = sc.nextLine().trim();
+        if (password.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your phone number");
+        String phone_number = sc.next();
+        String usertype = "Customer";
+        Timestamp registration_date = new Timestamp(System.currentTimeMillis());
+        User user = new User(email, username, password, phone_number, usertype, registration_date);
 
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
@@ -39,13 +60,47 @@ public class Register {
             preparedStatement.setTimestamp(6, user.getRegistration_date());
 
             preparedStatement.executeUpdate();
+            System.out.println("You've registered successfully");
+            Login.setLoggedINUser(user.getEmail());
+            Login.setUserType(user.getUsertype());
+
+            Home home = new Home();
+            home.homePage();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void restaurantReg() {
-        Restaurant restaurant = new Restaurant();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter your restaurant registration number");
+        String res_id = sc.nextLine().trim();
+        if (res_id.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your restaurant name");
+        String name = sc.nextLine().trim();
+        if (name.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your restaurant contact number");
+        String phone_number = sc.nextLine().trim();
+        if (phone_number.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter restaurant address");
+        String address = sc.nextLine().trim();
+        if (address.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        String owner = Login.getLoggedINUser();
+        Timestamp registration_date = new Timestamp(System.currentTimeMillis());
+        Restaurant restaurant = new Restaurant(res_id, name, phone_number, owner, address, registration_date);
 
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
@@ -79,13 +134,43 @@ public class Register {
             statement.setString(1,"Res_owner");
             statement.setString(2, Login.getLoggedINUser());
             statement.executeUpdate();
+
+            System.out.println("Registration successful");
+            Login.setUserType("Res_owner");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void employeeReg() {
-        Employee employee = new Employee();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter your employee id");
+        String id = sc.nextLine();
+        if (id.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your name");
+        String name = sc.nextLine();
+        if (name.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your password");
+        String password = sc.nextLine();
+        if (password.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        System.out.println("Enter your phone number");
+        String phone_number = sc.next();
+        if (phone_number.isEmpty()) {
+            System.out.println("This input should not be empty.");
+            return;
+        }
+        String job = "Delivery_Agent";
+        Timestamp registration_date = new Timestamp(System.currentTimeMillis());
+        Employee employee = new Employee(id, name, password, phone_number, job, registration_date);
 
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
@@ -101,7 +186,7 @@ public class Register {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        String insertQuery = "INSERT INTO Employee (employee_id, name, login_pass, phone_number, job, registration_date, availability_status) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO Employee (employee_id, name, login_pass, phone_number, job, registration_date, availability_status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
@@ -114,6 +199,7 @@ public class Register {
             preparedStatement.setBoolean(7, true);
 
             preparedStatement.executeUpdate();
+            System.out.println("Registration successful");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

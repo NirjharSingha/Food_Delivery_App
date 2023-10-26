@@ -11,18 +11,13 @@ public class User {
     private String usertype;
     private Timestamp registration_date;
 
-    public User() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter your email");
-        email = sc.next();
-        System.out.println("Enter your name");
-        username = sc.next();
-        System.out.println("Enter your password");
-        password = sc.next();
-        System.out.println("Enter your phone number");
-        phone_number = sc.next();
-        usertype = "Customer";
-        registration_date = new Timestamp(System.currentTimeMillis());
+    public User(String email, String username, String password, String phone_number, String usertype, Timestamp registration_date) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.phone_number = phone_number;
+        this.usertype = usertype;
+        this.registration_date = registration_date;
     }
 
     public String getEmail() {

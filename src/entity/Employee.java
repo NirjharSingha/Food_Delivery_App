@@ -59,17 +59,12 @@ public class Employee {
         this.registration_date = registration_date;
     }
 
-    public Employee() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter your email");
-        id = sc.next();
-        System.out.println("Enter your name");
-        name = sc.next();
-        System.out.println("Enter your password");
-        password = sc.next();
-        System.out.println("Enter your phone number");
-        phone_number = sc.next();
-        job = "Delivery_Agent";
-        registration_date = new Timestamp(System.currentTimeMillis());
+    public Employee(String id, String name, String password, String phone_number, String job, Timestamp registration_date) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.phone_number = phone_number;
+        this.job = job;
+        this.registration_date = registration_date;
     }
 }
