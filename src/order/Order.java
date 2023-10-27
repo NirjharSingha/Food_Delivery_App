@@ -182,13 +182,13 @@ public class Order {
 
             String tempQuery = "SELECT employee_id\n" +
                     "FROM Employee\n" +
-                    "WHERE job = 'Delivery_Agent' AND availability_status = TRUE\n" +
+                    "WHERE job = 'Delivery_Agent' AND availability_status = (SELECT MIN(availability_status) FROM Employee)\n" +
                     "LIMIT 1;\n";
             PreparedStatement tempSt = connection.prepareStatement(tempQuery);
             ResultSet r = tempSt.executeQuery();
             if(r.next()) {
                 statement1.setString(9, r.getString("employee_id"));
-                String updateQuery = "UPDATE Employee SET availability_status = FALSE WHERE employee_id = ?";
+                String updateQuery = "UPDATE Employee SET availability_status = availability_status + 1 WHERE employee_id = ?";
                 PreparedStatement st = connection.prepareStatement(updateQuery);
                 st.setString(1, r.getString("employee_id"));
                 st.executeUpdate();
@@ -230,7 +230,7 @@ public class Order {
                 "FROM Orders AS O\n" +
                 "INNER JOIN OrderStatus AS OS ON O.order_id = OS.order_id\n" +
                 "WHERE O.user_email = ? \n" +
-                "AND OS.delivered_to_customer IS NULL";
+                "AND OS.delivered_to_customer IS NULL AND OS.cancellation_status IS NULL";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, Login.getLoggedINUser());
         ResultSet r = statement.executeQuery();
@@ -263,6 +263,7 @@ public class Order {
                     System.out.println("The delivery time has exceeded. You will get refund if you cancel the order now.");
                     System.out.println("Press 1 if you want to confirm the cancellation");
                     System.out.println("Press any other key to skip");
+                    sc.nextLine();
                     choice = sc.nextLine().trim();
                     if(choice.equals("1")) {
                         String q = "UPDATE OrderStatus SET payment_status = ?, cancellation_status = ? WHERE order_id = ?";
@@ -276,6 +277,7 @@ public class Order {
                     System.out.println("The delivery time has not exceeded. If you cancel the order now you won't get any refund");
                     System.out.println("Press 1 if you want to confirm the cancellation");
                     System.out.println("Press any other key to skip");
+                    sc.nextLine();
                     choice = sc.nextLine().trim();
                     if(choice.equals("1")) {
                         String q = "UPDATE OrderStatus SET cancellation_status = ? WHERE order_id = ?";
@@ -286,7 +288,7 @@ public class Order {
                     }
                 }
                 if(choice.equals("1")) {
-                    String q = "UPDATE Employee SET availability_status = true WHERE employee_id = (SELECT delivery_agent FROM Orders WHERE order_id = ?)";
+                    String q = "UPDATE Employee SET availability_status = availability_status - 1 WHERE employee_id = (SELECT delivery_agent FROM Orders WHERE order_id = ?)";
                     PreparedStatement st = connection.prepareStatement(q);
                     st.setString(1, id);
                     st.executeUpdate();

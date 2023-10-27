@@ -22,36 +22,42 @@ public class Review {
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, Login.getLoggedINUser());
         ResultSet r = statement.executeQuery();
-        System.out.println("These are the order ids for which you didn't submit review");
         ArrayList<String> ids = new ArrayList<>();
+        boolean flag = false;
         while(r.next()) {
             System.out.println(r.getString("O.order_id"));
             ids.add(r.getString("O.order_id"));
+            flag = true;
         }
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the order_id for which you want to submit review");
-        String id = sc.next();
-        if (ids.contains(id)) {
-            String q = "SELECT menu_id, name FROM OrderDetails AS OD INNER JOIN Menu AS M ON OD.menu_id = M.menu_id WHERE OD.order_id = ?";
-            PreparedStatement st = connection.prepareStatement(query);
-            statement.setString(1, id);
-            ResultSet rs = statement.executeQuery();
-            System.out.println("Enter review:");
-            while(rs.next()) {
-                System.out.print(rs.getString("menu_id") + " " + r.getString("name") + " :");
-                BigDecimal value = sc.nextBigDecimal();
-                String insertQuery = "INSERT INTO Reviews (order_id, menu_id, rating, review_date) VALUES (?, ?, ?, ?)";
-                PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-                preparedStatement.setString(1, id);
-                preparedStatement.setString(2, rs.getString("menu_id"));
-                preparedStatement.setBigDecimal(3, value);
-                preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+        if(flag) {
+            System.out.println("These are the order ids for which you didn't submit review");
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter the order_id for which you want to submit review");
+            String id = sc.next();
+            if (ids.contains(id)) {
+                String q = "SELECT OD.menu_id, M.name FROM OrderDetails AS OD INNER JOIN Menu AS M ON OD.menu_id = M.menu_id WHERE OD.order_id = ?";
+                PreparedStatement st = connection.prepareStatement(q);
+                st.setString(1, id);
+                ResultSet rs = st.executeQuery();
+                System.out.println("Enter rating out of 5:");
+                while (rs.next()) {
+                    System.out.print(rs.getString("OD.menu_id") + " " + rs.getString("M.name") + " :");
+                    BigDecimal value = sc.nextBigDecimal();
+                    String insertQuery = "INSERT INTO Reviews (order_id, menu_id, rating, review_date) VALUES (?, ?, ?, ?)";
+                    PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+                    preparedStatement.setString(1, id);
+                    preparedStatement.setString(2, rs.getString("OD.menu_id"));
+                    preparedStatement.setBigDecimal(3, value);
+                    preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
 
-                preparedStatement.executeUpdate();
+                    preparedStatement.executeUpdate();
+                }
+                System.out.println("Review submitted");
+            } else {
+                System.out.println("Invalid id");
             }
         } else {
-            System.out.println("Invalid id");
+            System.out.println("There is no order to submit review");
         }
-
     }
 }

@@ -67,8 +67,8 @@ public class OrderStatus {
                 "FROM Orders AS O\n" +
                 "    JOIN OrderStatus AS OS ON O.order_id = OS.order_id\n" +
                 "WHERE O.restaurant_id IN (SELECT restaurant_id FROM Restaurants WHERE res_owner = ?)\n" +
-                (choice == 1 ? "" : choice == 2 ? "AND OS.delivered_to_customer IS NULL AND OS.cancellation_status IS NULL" : "OS.cancellation_status IS NOT NULL") +
-                "ORDER BY O.order_date DESC";
+                (choice == 1 ? "" : choice == 2 ? " AND OS.delivered_to_customer IS NULL AND OS.cancellation_status IS NULL " : " AND OS.cancellation_status IS NOT NULL ") +
+                " ORDER BY O.order_date DESC";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, Login.getLoggedINUser());
         ResultSet r = statement.executeQuery();
@@ -103,7 +103,7 @@ public class OrderStatus {
                 "    OS.cancellation_status\n" +
                 "FROM Orders AS O\n" +
                 "    JOIN OrderStatus AS OS ON O.order_id = OS.order_id\n" +
-                (choice == 1 ? "" : choice == 2 ? "WHERE OS.delivered_to_customer IS NULL AND OS.cancellation_status IS NULL" : "WHERE OS.cancellation_status IS NOT NULL") +
+                (choice == 1 ? "" : choice == 2 ? " WHERE OS.delivered_to_customer IS NULL AND OS.cancellation_status IS NULL " : " WHERE OS.cancellation_status IS NOT NULL ") +
                 "ORDER BY O.order_date DESC";
         PreparedStatement statement = connection.prepareStatement(query);
         ResultSet r = statement.executeQuery();

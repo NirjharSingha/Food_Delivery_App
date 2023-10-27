@@ -71,12 +71,12 @@ public class Owner_Query {
             int t = scanner.nextInt();
             String query = "SELECT M.menu_id,\n" +
                     "    M.name,\n" +
-                    "    SUM(OD.quantity) AS total_quantity\n" +
+                    "    IFNULL(SUM(OD.quantity), 0) AS total_quantity\n" +
                     "FROM Menu AS M\n" +
-                    "    JOIN OrderDetails AS OD ON M.menu_id = OD.menu_id\n" +
-                    "    JOIN Orders AS O ON OD.order_id = O.order_id\n" +
+                    "    LEFT JOIN OrderDetails AS OD ON M.menu_id = OD.menu_id\n" +
+                    "    LEFT JOIN Orders AS O ON OD.order_id = O.order_id\n" +
                     "WHERE M.restaurant_id = ? " + " " +
-                    "    AND O.order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY)\n" +
+                    "    AND (O.order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY) OR O.order_date IS NULL)\n" +
                     "GROUP BY M.menu_id,\n" +
                     "    M.name\n" +
                     "ORDER BY total_quantity " + (choice == 1 ? "DESC" : "ASC") + "\n" +
@@ -85,7 +85,11 @@ public class Owner_Query {
             Connection connection = db.getCon();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, res_id);
-            statement.executeUpdate();
+            ResultSet rs = statement.executeQuery();
+
+            while(rs.next()) {
+                System.out.println(rs.getString("M.menu_id") + "\t\t" + rs.getString("M.name") + "\t\t" + rs.getInt("total_quantity"));
+            }
         }
     }
 
@@ -101,7 +105,7 @@ public class Owner_Query {
             int x = scanner.nextInt();
             System.out.println("Enter the value of t");
             int t = scanner.nextInt();
-            String query = "WITH ReviewedMenuItems AS (\n" +
+            String query = "WITH ReviewedMenuItems(menu_id, name, average_rating) AS (\n" +
                     "    SELECT M.menu_id,\n" +
                     "        M.name,\n" +
                     "        AVG(R.rating) AS average_rating\n" +
@@ -115,9 +119,7 @@ public class Owner_Query {
                     "        M.name\n" +
                     "    HAVING COUNT(R.rating) > 0\n" +
                     ")\n" +
-                    "SELECT menu_id,\n" +
-                    "    name,\n" +
-                    "    average_rating\n" +
+                    "SELECT * \n" +
                     "FROM ReviewedMenuItems\n" +
                     "ORDER BY average_rating "  + (choice == 1 ? "DESC" : "ASC") + "\n" +
                     "LIMIT " + x;
@@ -125,7 +127,11 @@ public class Owner_Query {
             Connection connection = db.getCon();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, res_id);
-            statement.executeUpdate();
+            ResultSet rs = statement.executeQuery();
+
+            while(rs.next()) {
+                System.out.println(rs.getString("menu_id") + "\t\t" + rs.getString("name") + "\t\t" + rs.getBigDecimal("average_rating"));
+            }
         }
     }
 
@@ -136,19 +142,23 @@ public class Owner_Query {
         int x = scanner.nextInt();
         System.out.println("Enter the value of t");
         int t = scanner.nextInt();
-        String query = "SELECT COUNT(user_email) AS repeated_customer_count\n" +
+        String query = "SELECT user_email, order_count \n" +
                 "FROM (\n" +
-                "        SELECT user_email\n" +
+                "        SELECT user_email, COUNT(*) AS order_count\n" +
                 "        FROM Orders\n" +
                 "        WHERE restaurant_id = ? " + " \n" +
                 "            AND order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY)\n" +
                 "        GROUP BY user_email\n" +
-                "        HAVING COUNT(user_email) > " + x + " \n" +
+                "        HAVING order_count >= " + x + " \n" +
                 "    ) AS repeated_customers";
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, res_id);
-        statement.executeUpdate();
+        ResultSet rs = statement.executeQuery();
+
+        while(rs.next()) {
+            System.out.println(rs.getString("user_email") + "\t\t" + rs.getString("order_count"));
+        }
     }
 }

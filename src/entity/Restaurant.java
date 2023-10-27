@@ -1,9 +1,6 @@
 package entity;
 
-import utils.Login;
-
 import java.sql.Timestamp;
-import java.util.Scanner;
 
 public class Restaurant {
     private String res_id;

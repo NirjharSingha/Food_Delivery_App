@@ -196,7 +196,7 @@ public class Register {
             preparedStatement.setString(4, employee.getPhone_number());
             preparedStatement.setString(5, employee.getJob());
             preparedStatement.setTimestamp(6, employee.getRegistration_date());
-            preparedStatement.setBoolean(7, true);
+            preparedStatement.setInt(7, 0);
 
             preparedStatement.executeUpdate();
             System.out.println("Registration successful");
