@@ -54,9 +54,9 @@ public class Restaurant_Activity {
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, Login.getLoggedINUser());
         ResultSet r = statement.executeQuery();
-        System.out.println("restaurant_id" + " " + "name" + " " + "address" + " " + "phone_number" + " " + "registration_date");
+        System.out.println("restaurant_id" + " \t\t\t " + "name" + " \t\t\t " + "address" + " \t\t\t " + "phone_number" + " \t\t\t " + "registration_date");
         while(r.next()) {
-            System.out.println(r.getString("restaurant_id") + " " + r.getString("name") + " " + r.getString("address") + " " + r.getString("phone_number") + " " + r.getTimestamp("registration_date"));
+            System.out.println(r.getString("restaurant_id") + " \t\t\t\t\t\t " + r.getString("name") + " \t\t\t " + r.getString("address") + " \t\t\t\t " + r.getString("phone_number") + " \t\t\t " + r.getTimestamp("registration_date"));
         }
     }
 
@@ -81,9 +81,9 @@ public class Restaurant_Activity {
             statement.setString(1, Login.getLoggedINUser());
             statement.setString(2, res_id);
             ResultSet r = statement.executeQuery();
-            System.out.println("menu_id name category price availability_status");
+            System.out.println("menu_id \t\t\t name \t\t\t category \t\t\t price \t\t\t availability_status");
             while (r.next()) {
-                System.out.println(r.getString("menu_id") + " " + r.getString("m.name") + " " + r.getString("category") + " " + r.getBigDecimal("price") + " " + r.getBoolean("availability_status"));
+                System.out.println(r.getString("menu_id") + " \t\t\t " + r.getString("m.name") + " \t\t\t " + r.getString("category") + " \t\t\t " + r.getBigDecimal("price") + " \t\t\t\t " + r.getBoolean("availability_status"));
             }
         }
     }

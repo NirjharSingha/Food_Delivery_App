@@ -19,18 +19,20 @@ public class AdminQuery {
         String query = "SELECT r.restaurant_id,\n" +
                 "    IFNULL(COUNT(o.order_id), 0) AS order_count\n" +
                 "FROM Restaurants AS r LEFT JOIN Orders AS o ON r.restaurant_id = o.restaurant_id\n" +
-                "WHERE order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY) OR order_date IS NULL\n" +
+                "WHERE order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY) OR order_date IS NULL\n" +
                 "GROUP BY restaurant_id\n" +
                 "ORDER BY order_count DESC\n" +
-                "LIMIT " + x;
+                "LIMIT ?";
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
         PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, t);
+        statement.setInt(2, x);
         ResultSet rs = statement.executeQuery();
 
         System.out.println("Restaurant_id   order_count");
         while(rs.next()) {
-            System.out.println(rs.getString("restaurant_id") + "\t\t" + rs.getString("order_count"));
+            System.out.println(rs.getString("restaurant_id") + "\t\t\t\t" + rs.getString("order_count"));
         }
     }
     public void canceledLateOrders() throws SQLException {
@@ -44,15 +46,16 @@ public class AdminQuery {
                 "    JOIN OrderStatus AS OS ON O.order_id = OS.order_id\n" +
                 "WHERE OS.cancellation_status IS NOT NULL\n" +
                 "    AND TIMESTAMPDIFF(MINUTE, O.order_date, OS.cancellation_status) > O.delivery_time\n" +
-                "    AND O.order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY)\n" +
+                "    AND O.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)\n" +
                 "GROUP BY O.delivery_agent ORDER BY canceled_late_orders DESC";
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
         PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, t);
         ResultSet r = statement.executeQuery();
         System.out.println("Employee_id  canceled_late_orders");
         while(r.next()) {
-            System.out.println(r.getString("delivery_agent_id") + "\t\t\t" + r.getInt("canceled_late_orders"));
+            System.out.println(r.getString("delivery_agent_id") + "\t\t\t\t" + r.getInt("canceled_late_orders"));
         }
     }
     public void listUsers() throws SQLException {
@@ -60,12 +63,13 @@ public class AdminQuery {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the value of t");
         int t = sc.nextInt();
-        String query = "SELECT email, username, phone_number, usertype, registration_date FROM Users WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY)";
+        String query = "SELECT email, username, phone_number, usertype, registration_date FROM Users WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)";
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
         PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, t);
         ResultSet r = statement.executeQuery();
-        System.out.println("email  username  phone_number  usertype  registration_date");
+        System.out.println("email \t\t\t\t username \t\t phone_number \t\t usertype \t\t\t registration_date");
         while(r.next()) {
             System.out.println(r.getString("email") + "\t\t\t" + r.getString("username") + "\t\t\t" + r.getString("phone_number") + "\t\t\t" + r.getString("usertype") + "\t\t\t" + r.getTimestamp("registration_date"));
         }
@@ -106,7 +110,7 @@ public class AdminQuery {
         statement.setString(5, address); // Set address again
 
         ResultSet r = statement.executeQuery();
-        System.out.println("id  res_name owner contact_number  address  registration_date");
+        System.out.println("id \t\t res_name \t\t\t owner \t\t\t contact_number \t\t address \t\t registration_date");
         while(r.next()) {
             System.out.println(r.getString("restaurant_id") + "\t\t\t" + r.getString("name") + "\t\t\t" + r.getString("res_owner") + "\t\t\t" + r.getString("phone_number") + "\t\t\t" + r.getString("address") + "\t\t\t" + r.getTimestamp("registration_date"));
         }

@@ -84,9 +84,9 @@ public class Order {
         preparedStatement.setString(10, rating);
 
         ResultSet r = preparedStatement.executeQuery();
-        System.out.println("menu_id menu_name category price restaurant rating");
+        System.out.println("menu_id \t\t\t\t\t menu_name \t\t\t\t\t category \t\t\t\t\t price \t\t\t\t\t restaurant \t\t\t\t\t rating");
         while(r.next()) {
-            System.out.println(r.getString("menu_id") + " " + r.getString("menu_name")+ " " + r.getString("category")+ " " + r.getBigDecimal("price")+ " " + r.getString("res_name") +  " " + r.getBigDecimal("rating"));
+            System.out.println(r.getString("menu_id") + " \t\t\t\t\t " + r.getString("menu_name")+ " \t\t\t\t\t " + r.getString("category")+ " \t\t\t\t\t " + r.getBigDecimal("price")+ " \t\t\t\t\t " + r.getString("res_name") +  " \t\t\t\t\t " + r.getBigDecimal("rating"));
         }
         System.out.println("Now you can place the order");
     }

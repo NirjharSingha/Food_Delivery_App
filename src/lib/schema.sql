@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Restaurants (
     restaurant_id VARCHAR(100),
     name VARCHAR(100) NOT NULL,
     res_owner VARCHAR(100),
-    address VARCHAR(255),
+    address VARCHAR(255) NOT NULL,
     phone_number VARCHAR(15),
     registration_date DATETIME,
     PRIMARY KEY (restaurant_id),
@@ -22,11 +22,13 @@ CREATE TABLE IF NOT EXISTS Restaurants (
 CREATE TABLE IF NOT EXISTS Menu (
     menu_id VARCHAR(100),
     restaurant_id VARCHAR(100),
-    name VARCHAR(100) NOT NULL category VARCHAR(20) NOT NULL,
-    price DECIMAL(5, 2) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(20) NOT NULL,
+    price DECIMAL(5, 2) NOT NULL CHECK (price > 0),
     image LONGBLOB,
-    availability_status BOOLEAN,
+    availability_status BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (menu_id),
+    UNIQUE KEY unique_name_per_restaurant (restaurant_id, name),
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants (restaurant_id)
 );
 CREATE TABLE IF NOT EXISTS Orders (
@@ -47,7 +49,7 @@ CREATE TABLE IF NOT EXISTS Orders (
 CREATE TABLE IF NOT EXISTS OrderDetails (
     order_id VARCHAR(255),
     menu_id VARCHAR(100),
-    quantity INT,
+    quantity INT NOT NULL CHECK (quantity > 0),
     PRIMARY KEY (order_id, menu_id),
     FOREIGN KEY (order_id) REFERENCES Orders (order_id),
     FOREIGN KEY (menu_id) REFERENCES Menu (menu_id)
@@ -64,7 +66,7 @@ CREATE TABLE IF NOT EXISTS OrderStatus (
 CREATE TABLE IF NOT EXISTS Reviews (
     order_id VARCHAR(255),
     menu_id VARCHAR(100),
-    rating DECIMAL(3, 2),
+    rating DECIMAL(3, 2) CHECK (rating >= 0 AND rating <= 5),
     review_date DATETIME,
     PRIMARY KEY (order_id, menu_id),
     FOREIGN KEY (order_id) REFERENCES Orders (order_id),
@@ -72,8 +74,8 @@ CREATE TABLE IF NOT EXISTS Reviews (
 );
 CREATE TABLE IF NOT EXISTS Employee (
     employee_id VARCHAR(100),
-    name VARCHAR(100),
-    login_pass VARCHAR(100),
+    name VARCHAR(100) NOT NULL,
+    login_pass VARCHAR(100) NOT NULL,
     job VARCHAR(100),
     phone_number VARCHAR(15),
     registration_date DATETIME,

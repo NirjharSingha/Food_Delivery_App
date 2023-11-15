@@ -37,7 +37,7 @@ public class Home {
             }
 
             if(Objects.equals(Login.getUserType(), "Customer") || Objects.equals(Login.getUserType(), "Res_owner")) {
-                System.out.println("Press 9 to see to see the status of orders that you placed as a customer");
+                System.out.println("Press 9 to see the status of orders that you placed as a customer");
             }
 
             if(Objects.equals(Login.getUserType(), "Res_owner")) {

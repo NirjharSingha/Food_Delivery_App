@@ -31,13 +31,14 @@ public class OrderStatus {
                 "    JOIN OrderStatus AS OS ON O.order_id = OS.order_id\n" +
                 "WHERE O.user_email = ?\n" +
                 "ORDER BY O.order_date DESC\n" +
-                "LIMIT " + x;
+                "LIMIT ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, Login.getLoggedINUser());
+        statement.setInt(2, x);
         ResultSet r = statement.executeQuery();
-        System.out.println("order_id restaurant order_date total_price(without delivery charge) delivery_charge delivery_time delivery_taken delivered_to_customer payment_status cancellation_status");
+        System.out.println("order_id \t\t\t\t\t\t\t\t\t\t restaurant \t\t order_date \t\t\t\t total_price(without delivery charge) \t\t delivery_charge \t\t delivery_time \t\t\t\t delivery_taken \t\t\t\t\t\t\t\t delivered_to_customer \t\t\t\t\t payment_status \t\t\t\t cancellation_status");
         while (r.next()) {
-            System.out.println(r.getString("O.order_id") + " " + r.getString("O.restaurant_id") + " " + r.getTimestamp("O.order_date") + " " + r.getBigDecimal("O.total_price") + " " + r.getBigDecimal("O.delivery_fee") + " " + r.getInt("O.delivery_time") + " " + r.getTimestamp("OS.delivery_taken") + " " + r.getTimestamp("OS.delivered_to_customer") + " " + r.getString("OS.payment_status") + " " + r.getTimestamp("OS.cancellation_status"));
+            System.out.println(r.getString("O.order_id") + " \t\t " + r.getString("O.restaurant_id") + " \t\t\t\t " + r.getTimestamp("O.order_date") + " \t\t " + r.getBigDecimal("O.total_price") + " \t\t\t\t\t\t\t\t\t\t\t " + r.getBigDecimal("O.delivery_fee") + " \t\t\t\t " + r.getInt("O.delivery_time") + " \t\t\t\t\t\t " + r.getTimestamp("OS.delivery_taken") + " \t\t\t\t\t\t\t\t " + r.getTimestamp("OS.delivered_to_customer") + " \t\t\t\t\t " + r.getString("OS.payment_status") + " \t\t\t\t\t\t\t\t " + r.getTimestamp("OS.cancellation_status"));
         }
     }
 
@@ -72,9 +73,9 @@ public class OrderStatus {
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, Login.getLoggedINUser());
         ResultSet r = statement.executeQuery();
-        System.out.println("order_id user restaurant order_date total_price(without delivery charge) delivery_charge delivery_time delivery_taken delivered_to_customer payment_status cancellation_status");
+        System.out.println("order_id \t\t\t\t\t\t\t\t\t\t\t user \t\t\t\t restaurant \t\t\t order_date \t\t\t\t total_price(without delivery charge) \t\t\t\t delivery_charge \t\t delivery_time \t\t\t\t delivery_taken \t\t\t\t\t\t\t\t delivered_to_customer \t\t\t\t\t payment_status \t\t\t\t cancellation_status");
         while (r.next()) {
-            System.out.println(r.getString("O.order_id") + " " + r.getString("O.user_email") + " " + r.getString("O.restaurant_id") + " " + r.getTimestamp("O.order_date") + " " + r.getBigDecimal("O.total_price") + " " + r.getBigDecimal("O.delivery_fee") + " " + r.getInt("O.delivery_time") + " " + r.getTimestamp("OS.delivery_taken") + " " + r.getTimestamp("OS.delivered_to_customer") + " " + r.getString("OS.payment_status") + " " + r.getTimestamp("OS.cancellation_status"));
+            System.out.println(r.getString("O.order_id") + " \t\t " + r.getString("O.user_email") + " \t\t\t " + r.getString("O.restaurant_id") + " \t\t\t\t " + r.getTimestamp("O.order_date") + " \t\t\t\t\t " + r.getBigDecimal("O.total_price") + " \t\t\t\t\t\t\t\t\t\t\t " + r.getBigDecimal("O.delivery_fee") + " \t\t\t\t " + r.getInt("O.delivery_time") + " \t\t\t\t\t\t " + r.getTimestamp("OS.delivery_taken") + " \t\t\t\t\t\t\t\t " + r.getTimestamp("OS.delivered_to_customer") + " \t\t\t\t\t " + r.getString("OS.payment_status") + " \t\t\t\t\t\t\t\t " + r.getTimestamp("OS.cancellation_status"));
         }
     }
 
@@ -107,9 +108,9 @@ public class OrderStatus {
                 "ORDER BY O.order_date DESC";
         PreparedStatement statement = connection.prepareStatement(query);
         ResultSet r = statement.executeQuery();
-        System.out.println("order_id user restaurant order_date total_price(without delivery charge) delivery_charge delivery_time delivery_taken delivered_to_customer payment_status cancellation_status");
+        System.out.println("order_id \t\t\t\t\t\t\t\t\t\t\t user \t\t\t\t restaurant \t\t\t order_date \t\t\t\t total_price(without delivery charge) \t\t\t\t delivery_charge \t\t delivery_time \t\t\t\t delivery_taken \t\t\t\t\t\t\t\t delivered_to_customer \t\t\t\t\t payment_status \t\t\t\t cancellation_status");
         while (r.next()) {
-            System.out.println(r.getString("O.order_id") + " " + r.getString("O.user_email") + " " + r.getString("O.restaurant_id") + " " + r.getTimestamp("O.order_date") + " " + r.getBigDecimal("O.total_price") + " " + r.getBigDecimal("O.delivery_fee") + " " + r.getInt("O.delivery_time") + " " + r.getTimestamp("OS.delivery_taken") + " " + r.getTimestamp("OS.delivered_to_customer") + " " + r.getString("OS.payment_status") + " " + r.getTimestamp("OS.cancellation_status"));
+            System.out.println(r.getString("O.order_id") + " \t\t " + r.getString("O.user_email") + " \t\t\t " + r.getString("O.restaurant_id") + " \t\t\t\t " + r.getTimestamp("O.order_date") + " \t\t\t\t\t " + r.getBigDecimal("O.total_price") + " \t\t\t\t\t\t\t\t\t\t\t " + r.getBigDecimal("O.delivery_fee") + " \t\t\t\t " + r.getInt("O.delivery_time") + " \t\t\t\t\t\t " + r.getTimestamp("OS.delivery_taken") + " \t\t\t\t\t\t\t\t " + r.getTimestamp("OS.delivered_to_customer") + " \t\t\t\t\t " + r.getString("OS.payment_status") + " \t\t\t\t\t\t\t\t " + r.getTimestamp("OS.cancellation_status"));
         }
     }
 }

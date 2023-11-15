@@ -76,19 +76,22 @@ public class Owner_Query {
                     "    LEFT JOIN OrderDetails AS OD ON M.menu_id = OD.menu_id\n" +
                     "    LEFT JOIN Orders AS O ON OD.order_id = O.order_id\n" +
                     "WHERE M.restaurant_id = ? " + " " +
-                    "    AND (O.order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY) OR O.order_date IS NULL)\n" +
+                    "    AND (O.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY) OR O.order_date IS NULL)\n" +
                     "GROUP BY M.menu_id,\n" +
                     "    M.name\n" +
                     "ORDER BY total_quantity " + (choice == 1 ? "DESC" : "ASC") + "\n" +
-                    "LIMIT " + x;
+                    "LIMIT ?";
             ConnectDatabase db = new ConnectDatabase();
             Connection connection = db.getCon();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, res_id);
+            statement.setInt(2, t);
+            statement.setInt(3, x);
             ResultSet rs = statement.executeQuery();
 
+            System.out.println("menu_id \t\t\t name \t\t\t\t total_quantity");
             while(rs.next()) {
-                System.out.println(rs.getString("M.menu_id") + "\t\t" + rs.getString("M.name") + "\t\t" + rs.getInt("total_quantity"));
+                System.out.println(rs.getString("M.menu_id") + "\t\t\t\t" + rs.getString("M.name") + "\t\t\t\t\t" + rs.getInt("total_quantity"));
             }
         }
     }
@@ -114,7 +117,7 @@ public class Owner_Query {
                     "        JOIN Orders AS O ON R.order_id = O.order_id\n" +
                     "    WHERE M.restaurant_id = ? " + " \n" +
                     "        AND R.rating IS NOT NULL\n" +
-                    "        AND O.order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY)\n" +
+                    "        AND O.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)\n" +
                     "    GROUP BY M.menu_id,\n" +
                     "        M.name\n" +
                     "    HAVING COUNT(R.rating) > 0\n" +
@@ -122,22 +125,25 @@ public class Owner_Query {
                     "SELECT * \n" +
                     "FROM ReviewedMenuItems\n" +
                     "ORDER BY average_rating "  + (choice == 1 ? "DESC" : "ASC") + "\n" +
-                    "LIMIT " + x;
+                    "LIMIT ?";
             ConnectDatabase db = new ConnectDatabase();
             Connection connection = db.getCon();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, res_id);
+            statement.setInt(2, t);
+            statement.setInt(3, x);
             ResultSet rs = statement.executeQuery();
 
+            System.out.println("menu_id \t\t\t name \t\t\t average_rating");
             while(rs.next()) {
-                System.out.println(rs.getString("menu_id") + "\t\t" + rs.getString("name") + "\t\t" + rs.getBigDecimal("average_rating"));
+                System.out.println(rs.getString("menu_id") + "\t\t\t" + rs.getString("name") + "\t\t\t" + rs.getBigDecimal("average_rating"));
             }
         }
     }
 
     public void repeatedCustomer(String res_id) throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("count of customers who have ordered at least x times in last t days");
+        System.out.println("customers who have ordered at least x times in last t days");
         System.out.println("Enter the value of x");
         int x = scanner.nextInt();
         System.out.println("Enter the value of t");
@@ -147,18 +153,21 @@ public class Owner_Query {
                 "        SELECT user_email, COUNT(*) AS order_count\n" +
                 "        FROM Orders\n" +
                 "        WHERE restaurant_id = ? " + " \n" +
-                "            AND order_date >= DATE_SUB(CURDATE(), INTERVAL " + t + " DAY)\n" +
+                "            AND order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)\n" +
                 "        GROUP BY user_email\n" +
-                "        HAVING order_count >= " + x + " \n" +
+                "        HAVING order_count >= ? \n" +
                 "    ) AS repeated_customers";
         ConnectDatabase db = new ConnectDatabase();
         Connection connection = db.getCon();
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, res_id);
+        statement.setInt(2, t);
+        statement.setInt(3, x);
         ResultSet rs = statement.executeQuery();
 
+        System.out.println("user_email \t\t\t\t order_count");
         while(rs.next()) {
-            System.out.println(rs.getString("user_email") + "\t\t" + rs.getString("order_count"));
+            System.out.println(rs.getString("user_email") + "\t\t\t\t" + rs.getInt("order_count"));
         }
     }
 }

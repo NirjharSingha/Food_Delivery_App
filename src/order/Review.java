@@ -41,7 +41,7 @@ public class Review {
                 ResultSet rs = st.executeQuery();
                 System.out.println("Enter rating out of 5:");
                 while (rs.next()) {
-                    System.out.print(rs.getString("OD.menu_id") + " " + rs.getString("M.name") + " :");
+                    System.out.print(rs.getString("OD.menu_id") + "  " + rs.getString("M.name") + " : ");
                     BigDecimal value = sc.nextBigDecimal();
                     String insertQuery = "INSERT INTO Reviews (order_id, menu_id, rating, review_date) VALUES (?, ?, ?, ?)";
                     PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
