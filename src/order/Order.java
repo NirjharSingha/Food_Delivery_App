@@ -163,22 +163,15 @@ public class Order {
             orderTotalPriceMap.put(restaurantId, totalOrderPrice);
         }
         System.out.println("Your order is placed. Details are given below:");
-        System.out.println("Order_id Restaurant Price(without delivery charge) Delivery_charge Delivery_time");
+        System.out.println("Order_id \t\t\t Restaurant \t\t\t Price(without delivery charge) \t\t\t Delivery_charge \t\t\t\t Delivery_time");
         for (Map.Entry<String, Map<String, OrderItem>> entry : restaurantMenuMap.entrySet()) {
             String restaurantId = entry.getKey(); // i-th key
             Map<String, OrderItem> menuItems = entry.getValue(); // i-th value (another map)
             String orderId = Login.getLoggedINUser() + restaurantId + LocalDateTime.now();
 
-            String query1 = "INSERT INTO Orders (order_id, user_email, restaurant_id, order_date, delivery_address, total_price, delivery_time, delivery_fee, delivery_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement statement1 = connection.prepareStatement(query1);
-            statement1.setString(1, orderId);
-            statement1.setString(2, Login.getLoggedINUser());
-            statement1.setString(3, restaurantId);
-            statement1.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-            statement1.setString(5, del_address);
-            statement1.setBigDecimal(6, orderTotalPriceMap.get(restaurantId));
-            statement1.setInt(7, 30);
-            statement1.setBigDecimal(8, orderTotalPriceMap.get(restaurantId).multiply(new BigDecimal("0.1")));
+            String query1 = "{CALL addNewOrder(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+            CallableStatement statement1 = connection.prepareCall(query1);
+            statement1.setString(1, Login.getLoggedINUser());
 
             String tempQuery = "SELECT employee_id\n" +
                     "FROM Employee\n" +
@@ -187,16 +180,25 @@ public class Order {
             PreparedStatement tempSt = connection.prepareStatement(tempQuery);
             ResultSet r = tempSt.executeQuery();
             if(r.next()) {
-                statement1.setString(9, r.getString("employee_id"));
+                statement1.setString(2, r.getString("employee_id"));
                 String updateQuery = "UPDATE Employee SET availability_status = availability_status + 1 WHERE employee_id = ?";
                 PreparedStatement st = connection.prepareStatement(updateQuery);
                 st.setString(1, r.getString("employee_id"));
                 st.executeUpdate();
             } else {
-                statement1.setString(9, null);
+                statement1.setString(2, null);
             }
 
-            statement1.executeUpdate();
+            statement1.setString(3, restaurantId);
+            statement1.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            statement1.setString(5, del_address);
+            statement1.setBigDecimal(6, orderTotalPriceMap.get(restaurantId));
+            statement1.setInt(7, 30);
+            statement1.setBigDecimal(8, orderTotalPriceMap.get(restaurantId).multiply(new BigDecimal("0.1")));
+            statement1.setString(9, orderId);
+
+            statement1.execute();
+            orderId = statement1.getString(9);
 
             // Example: Loop through menuItems (another map) for this restaurant
             for (Map.Entry<String, OrderItem> itemEntry : menuItems.entrySet()) {
@@ -212,13 +214,7 @@ public class Order {
                 statement2.executeUpdate();
             }
 
-            String query3 = "INSERT INTO OrderStatus (order_id, payment_status) VALUES (?, ?)";
-            PreparedStatement statement3 = connection.prepareStatement(query3);
-            statement3.setString(1, orderId);
-            statement3.setString(2, "Paid");
-
-            statement3.executeUpdate();
-            System.out.println(orderId + " " + restaurantId + " " + orderTotalPriceMap.get(restaurantId) + " " + orderTotalPriceMap.get(restaurantId).multiply(new BigDecimal("0.10")) + " 30 min");
+            System.out.println(orderId + " \t\t\t " + restaurantId + " \t\t\t\t\t\t\t " + orderTotalPriceMap.get(restaurantId) + " \t\t\t\t\t\t\t\t " + orderTotalPriceMap.get(restaurantId).multiply(new BigDecimal("0.10")) + " \t\t\t\t\t\t 30 min");
         }
 
     }
