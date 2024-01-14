@@ -32,4 +32,5 @@ public class Main {
         }
         sc.close();
     }
+    // https://docs.google.com/drawings/d/1tiLkGjBgK1FTO4OqxL-3fOgUuKZyWR40J6K_h0ENL38/edit
 }

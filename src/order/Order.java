@@ -163,7 +163,7 @@ public class Order {
             orderTotalPriceMap.put(restaurantId, totalOrderPrice);
         }
         System.out.println("Your order is placed. Details are given below:");
-        System.out.println("Order_id \t\t\t Restaurant \t\t\t Price(without delivery charge) \t\t\t Delivery_charge \t\t\t\t Delivery_time");
+        System.out.println("Order_id \t\t Restaurant \t\t\t Price(without delivery charge) \t\t\t Delivery_charge \t\t\t\t Delivery_time");
         for (Map.Entry<String, Map<String, OrderItem>> entry : restaurantMenuMap.entrySet()) {
             String restaurantId = entry.getKey(); // i-th key
             Map<String, OrderItem> menuItems = entry.getValue(); // i-th value (another map)

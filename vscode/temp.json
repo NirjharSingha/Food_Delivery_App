@@ -1,0 +1,66 @@
+[
+    {
+      "sender": "dummydummy004400@gmail.com",
+      "receiver": "user2@gmail.com",
+      "messageText": "Hello there!",
+      "time": "2022-03-01T12:30:00Z",
+      "isSeen": false
+    },
+    {
+      "sender": "dummydummy004400@gmail.com",
+      "receiver": "user3@gmail.com",
+      "messageText": "How are you doing?",
+      "time": "2022-03-02T08:45:00Z",
+      "isSeen": true
+    },
+    {
+      "sender": "dummydummy004400@gmail.com",
+      "receiver": "user10@gmail.com",
+      "messageText": "Hi! I got your message.",
+      "time": "2022-03-03T14:20:00Z",
+      "isSeen": false
+    },
+    {
+        "sender": "dummydummy004400@gmail.com",
+        "receiver": "user2@gmail.com",
+        "messageText": "Hello there!",
+        "time": "2022-03-01T12:30:00Z",
+        "isSeen": false
+      },
+      {
+        "sender": "dummydummy004400@gmail.com",
+        "receiver": "user3@gmail.com",
+        "messageText": "How are you doing?",
+        "time": "2022-03-02T08:45:00Z",
+        "isSeen": true
+      },
+      {
+        "sender": "dummydummy004400@gmail.com",
+        "receiver": "user1@gmail.com",
+        "messageText": "Hi! I got your message.",
+        "time": "2022-03-03T14:20:00Z",
+        "isSeen": false
+      },
+    {
+      "sender": "user3",
+      "receiver": "user1",
+      "messageText": "I'm good, thank you!",
+      "time": "2022-03-04T10:15:00Z",
+      "isSeen": false
+    },
+    {
+      "sender": "user2",
+      "receiver": "user3",
+      "messageText": "Let's plan something for the weekend.",
+      "time": "2022-03-05T18:00:00Z",
+      "isSeen": true
+    },
+    {
+      "sender": "user3",
+      "receiver": "user2",
+      "messageText": "Sure! I'm in.",
+      "time": "2022-03-06T09:30:00Z",
+      "isSeen": false
+    }
+  ]
+  

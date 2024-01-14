@@ -31,7 +31,7 @@ public class EmployeeQuery {
         ArrayList<String> ids = new ArrayList<>();
         ResultSet r = st.executeQuery();
         boolean flag = false;
-        System.out.println("Order_id \t\t\t\t\t\t\t\t\t\t\t\t user_email \t\t restaurant_id \t\t order_date \t\t\t delivery_time \t\t delivery_taken \t\t delivered_to_customer \t\t cancellation_status");
+        System.out.println("Order_id \t\t\t user_email \t\t restaurant_id \t\t order_date \t\t\t delivery_time \t\t delivery_taken \t\t delivered_to_customer \t\t cancellation_status");
         while (r.next()) {
             System.out.println(r.getString("O.order_id") + " \t\t\t " + r.getString("O.user_email") + " \t\t\t " + r.getString("O.restaurant_id") + " \t\t\t " + r.getTimestamp("O.order_date") + " \t\t\t " + r.getInt("O.delivery_time") + " \t\t\t " + r.getTimestamp("OS.delivery_taken") + " \t\t\t\t " + r.getTimestamp("OS.delivered_to_customer") + " \t\t\t\t\t\t " + r.getTimestamp("OS.cancellation_status"));
             ids.add(r.getString("O.order_id"));
